@@ -7,6 +7,7 @@ import com.example.design.model.CookingLike;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,11 +18,12 @@ import java.util.List;
  * @version 0.1
  */
 @Service
+@Transactional
 public class CookingService {
   @Autowired
-  CookingMapper cookingMapper;
+  private CookingMapper cookingMapper;
   @Autowired
-  CookingLikeMapper cookingLikeMapper;
+  private CookingLikeMapper cookingLikeMapper;
 
   /**
    * insert one recipe into table cooking.
@@ -30,17 +32,26 @@ public class CookingService {
    * @return number of rows affected.
    */
   public int addCooking(Cooking cooking) {
-    return cookingMapper.addCooking(cooking);
+    return cookingMapper.add(cooking);
   }
 
   /**
    * select one recipe by cookingId.
    *
-   * @param cookingId cooking's id.
+   * @param cookingId cooking's findById.
    * @return Cooking
    */
   public Cooking findById(long cookingId) {
     return cookingMapper.findById(cookingId);
+  }
+
+  /**
+   * get top 6 by like number.
+   *
+   * @return cooking list.
+   */
+  public List<Cooking> top6() {
+    return cookingMapper.top6();
   }
 
   /**
@@ -56,40 +67,40 @@ public class CookingService {
   /**
    * set one recipe's state as "1" which means it has been deleted.
    *
-   * @param cookingId cooking's id.
+   * @param cookingId cooking's findById.
    * @return number of rows affected.
    */
   public int markCookingDelete(long cookingId) {
-    return cookingMapper.markCookingDelete(cookingId);
+    return cookingMapper.markDeleted(cookingId);
   }
 
   /**
-   * select one user's all recipes.
+   * select one user's findAll recipes.
    *
-   * @param userId user'id.
+   * @param userId user'findById.
    * @return List
    */
   public List<Cooking> findAllCookingByUserId(long userId) {
-    return cookingMapper.findAllCookingByUserId(userId);
+    return cookingMapper.findByUserId(userId);
   }
 
   /**
-   * select all cooking by keywords such as ingredient,cookingName, cookingStyleName.
+   * select findAll cooking by keywords such as ingredient,cookingName, cookingStyleName.
    *
    * @param keywords keyword...
    * @return List
    */
   public List<Cooking> findAllCookingByKeywords(String keywords) {
-    return cookingMapper.findCookingByKeywords(keywords);
+    return cookingMapper.findByKeyword(keywords);
   }
 
   /**
-   * select all cooking.
+   * select findAll cooking.
    *
-   * @return all cookings.
+   * @return findAll cookings.
    */
   public List<Cooking> all() {
-    return cookingMapper.all();
+    return cookingMapper.findAll();
   }
 
   /**
@@ -99,26 +110,26 @@ public class CookingService {
    * @return number of rows affected.
    */
   public int addCookingLikeUser(CookingLike cookingLike) {
-    return cookingLikeMapper.addCookingLikeUser(cookingLike);
+    return cookingLikeMapper.add(cookingLike);
   }
 
   /**
    * delete cookingLike's record.
    *
    * @param userId    user'is.
-   * @param cookingId cooking.id
+   * @param cookingId cooking.findById
    * @return number of rows affected.
    */
   public int deleteCookingLike(long userId, long cookingId) {
-    return cookingLikeMapper.deleteCookingLike(userId, cookingId);
+    return cookingLikeMapper.delete(userId, cookingId);
   }
 
   public int likeNumIncr(long cookingId) {
-    return cookingMapper.likeNumIncr(cookingId);
+    return cookingMapper.incrLikeNum(cookingId);
   }
 
   public int likeNumDecr(long cookingId) {
-    return cookingMapper.likeNumDecr(cookingId);
+    return cookingMapper.decrLikeNum(cookingId);
   }
 
 }

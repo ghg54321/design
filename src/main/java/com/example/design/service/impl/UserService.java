@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,27 +19,28 @@ import java.util.List;
  * 提供用户信息的服务 Created by lxh on 4/14/16.
  */
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
   @Autowired
-  UserMapper userMapper;
+  private UserMapper userMapper;
 
   /**
-   * select all users.
+   * select findAll users.
    *
    * @return List
    */
   public List<User> all() {
-    return userMapper.all();
+    return userMapper.findAll();
   }
 
   /**
    * select user by userId.
    *
-   * @param userId user's id
+   * @param userId user's findById
    * @return User
    */
   public User id(long userId) {
-    return userMapper.id(userId);
+    return userMapper.findById(userId);
   }
 
   /**
@@ -68,24 +70,24 @@ public class UserService implements UserDetailsService {
    * @return User.
    */
   public User getByAccountName(String name) {
-    return userMapper.selectByAccountName(name);
+    return userMapper.findByAccount(name);
   }
 
   /**
    * remove a user by userId.
    *
-   * @param userId user's id.
+   * @param userId user's findById.
    * @return number of rows affected.
    */
-  public int removeById(int userId) {
-    return userMapper.delete(userId);
+  public int removeById(User user) {
+    return userMapper.delete(user);
   }
 
   /**
    * remove a user by account.
    */
-  public int removeByAccountName(String account) {
-    return userMapper.deleteByAccountName(account);
+  public int removeByAccountName(User user) {
+    return userMapper.deleteByAccount(user);
   }
 
   /**
@@ -98,16 +100,16 @@ public class UserService implements UserDetailsService {
   /**
    * mark a user to limited.
    *
-   * @param userId user's id.
+   * @param userId user's findById.
    */
   public int markLimit(Long userId) {
-    return userMapper.markLimit(userId);
+    return userMapper.markLimited(userId);
   }
 
   /**
    * mark a user unlimited.
    *
-   * @param userId user's id.
+   * @param userId user's findById.
    */
   public int markNormal(Long userId) {
     return userMapper.markNormal(userId);
@@ -116,29 +118,29 @@ public class UserService implements UserDetailsService {
   /**
    * change password.
    */
-  public int updatePassword(String account, String password) {
-    return userMapper.updatePassword(account, password);
+  public int updatePassword(User user) {
+    return userMapper.updatePassword(user);
   }
 
   /**
    * get users by nickName.
    */
   public List<User> getByNickName(String nickName) {
-    return userMapper.selectByNickName(nickName);
+    return userMapper.findByNickName(nickName);
   }
 
   /**
    * get users by city name.
    */
   public List<User> getByCity(String city) {
-    return userMapper.selectByCity(city);
+    return userMapper.findByCity(city);
   }
 
   /**
-   * get all limited users.
+   * get findAll limited users.
    */
   public List<User> getAllLimitUser() {
-    return userMapper.findLimitUser();
+    return userMapper.findLimitedUser();
   }
 
 
@@ -150,7 +152,6 @@ public class UserService implements UserDetailsService {
     }
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
     authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
-    System.out.println(1 + user.getRole().name());
     return new org.springframework.security.core.userdetails.User(username,
             user.getPassword(), authorities);
   }

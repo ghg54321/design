@@ -7,6 +7,7 @@ import com.example.design.model.ShowLike;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,17 +15,18 @@ import java.util.List;
  * 用户作品服务 Created by lxh on 4/14/16.
  */
 @Service
+@Transactional
 public class ShowService {
   @Autowired
-  ShowMapper showMapper;
+  private ShowMapper showMapper;
   @Autowired
-  ShowLikeMapper showLikeMapper;
+  private ShowLikeMapper showLikeMapper;
 
   /**
    * add one cookingShow to a table.
    */
-  public int addShow(Show show) {
-    return showMapper.addShow(show);
+  public int add(Show show) {
+    return showMapper.add(show);
   }
 
   /**
@@ -38,15 +40,15 @@ public class ShowService {
   /**
    * Update show information
    */
-  public int updateShow(Show show) {
-    return showMapper.updateShow(show);
+  public int update(Show show) {
+    return showMapper.update(show);
   }
 
   /**
    * mark show'state as "deleted".
    */
-  public int markShowDelete(long showId) {
-    return showMapper.markShowDelete(showId);
+  public int markDeleted(long showId) {
+    return showMapper.markDeleted(showId);
   }
 
   /**
@@ -54,30 +56,30 @@ public class ShowService {
    *
    * @return Show
    */
-  public Show findShowById(long showId) {
-    return showMapper.findShowById(showId);
+  public Show findById(long showId) {
+    return showMapper.findById(showId);
   }
 
   /**
-   * select one user's all show.
+   * select one user's findAll show.
    *
    * @return List
    */
-  public List<Show> findAllShowByUserId(long userId) {
-    return showMapper.findAllShowByUserId(userId);
+  public List<Show> findByUserId(long userId) {
+    return showMapper.findByUserId(userId);
   }
 
   /**
-   * select one cooking's all show.
+   * select one cooking's findAll show.
    *
    * @return List
    */
-  public List<Show> findAllShowByCookingId(long cookingId) {
-    return showMapper.findAllShowByCookingId(cookingId);
+  public List<Show> findByCookingId(long cookingId) {
+    return showMapper.findByCookingId(cookingId);
   }
 
-  public List<Show> all() {
-    return showMapper.all();
+  public List<Show> findAll() {
+    return showMapper.findAll();
   }
 
   /**
@@ -88,21 +90,17 @@ public class ShowService {
   }
 
   /**
-   * update showLike's state. delete showLike's record
-   * delete one showLike record
-   * @param userId
-   * @param showId
-   * @return
+   * update showLike's state. delete showLike's record delete one showLike record
    */
   public int deleteShowLike(long userId, long showId) {
     return showLikeMapper.deleteShowLike(userId, showId);
   }
 
   public int likeNumIncr(long showId) {
-    return showMapper.likeNumIncr(showId);
+    return showMapper.incrLikeNum(showId);
   }
 
   public int likeNumDecr(long showId) {
-    return showMapper.likeNumDecr(showId);
+    return showMapper.decrLikeNum(showId);
   }
 }

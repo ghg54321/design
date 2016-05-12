@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class CookingApi {
   /**
    * 返回所有菜谱.
    *
-   * @return all cooking list.
+   * @return findAll cooking list.
    */
   @RequestMapping(value = "", method = RequestMethod.GET)
 //  @Authorization({Role.ADMIN, Role.USER, Role.GUEST})
@@ -48,12 +49,24 @@ public class CookingApi {
   }
 
   /**
+   * get top 6.
+   */
+  @RequestMapping(value = "top6", method = RequestMethod.GET)
+  public ResponseEntity top6() {
+    List<Cooking> cookings = cookingService.top6();
+    if (cookings == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return new ResponseEntity<>(cookings, HttpStatus.OK);
+  }
+
+  /**
    * 返回某一菜谱的所有作品.
    */
   @RequestMapping(value = "/{cookingId}/show", method = RequestMethod.GET)
 //  @Authorization({Role.ADMIN, Role.USER, Role.GUEST, Role.LIMITED_USER})
   public ResponseEntity allShow(@PathVariable long cookingId) {
-    List<Show> list = showService.findAllShowByCookingId(cookingId);
+    List<Show> list = showService.findByCookingId(cookingId);
     if (list != null) {
       return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -66,7 +79,7 @@ public class CookingApi {
   @RequestMapping(value = "{cookingId}/show/{showId}", method = RequestMethod.GET)
 //  @Authorization({Role.ADMIN, Role.USER, Role.GUEST, Role.LIMITED_USER})
   public ResponseEntity oneShow(@PathVariable long cookingId, @PathVariable long showId) {
-    Show show = showService.findShowById(showId);
+    Show show = showService.findById(showId);
     if (show == null) {
       return ResponseEntity.notFound().build();
     }
@@ -179,16 +192,10 @@ public class CookingApi {
   }
 
 
-  private static class CookingLikeForm {
+  private static class CookingLikeForm implements Serializable {
     private long cookingId;
     private long userId;
     private int like;
-
-    public CookingLikeForm(long cookingId, long userId, int like) {
-      this.cookingId = cookingId;
-      this.userId = userId;
-      this.like = like;
-    }
 
     public CookingLikeForm() {
     }
@@ -197,12 +204,24 @@ public class CookingApi {
       return cookingId;
     }
 
+    public void setCookingId(long cookingId) {
+      this.cookingId = cookingId;
+    }
+
     public long getUserId() {
       return userId;
     }
 
+    public void setUserId(long userId) {
+      this.userId = userId;
+    }
+
     public int getLike() {
       return like;
+    }
+
+    public void setLike(int like) {
+      this.like = like;
     }
   }
 }

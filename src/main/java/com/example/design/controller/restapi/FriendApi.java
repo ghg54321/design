@@ -1,7 +1,7 @@
 package com.example.design.controller.restapi;
 
-import com.example.design.authorization.annotation.Authorization;
-import com.example.design.authorization.annotation.CurrentUser;
+import com.example.design.annotation.Authorization;
+import com.example.design.annotation.CurrentUser;
 import com.example.design.constant.Role;
 import com.example.design.model.User;
 import com.example.design.service.impl.FriendService;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * follow rest api.
+ * friend rest api.
  *
  * @author lxh
  * @version 0.1

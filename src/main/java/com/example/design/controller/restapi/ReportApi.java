@@ -1,7 +1,7 @@
 package com.example.design.controller.restapi;
 
-import com.example.design.authorization.annotation.Authorization;
-import com.example.design.authorization.annotation.CurrentUser;
+import com.example.design.annotation.Authorization;
+import com.example.design.annotation.CurrentUser;
 import com.example.design.constant.Role;
 import com.example.design.model.Report;
 import com.example.design.model.User;
@@ -44,6 +44,13 @@ public class ReportApi {
     return ResponseEntity.ok(report);
   }
 
+  /**
+   * 新建report.
+   *
+   * @param report 新建的report
+   * @param user   当前用户
+   * @return 是否成功
+   */
   @RequestMapping(value = "", method = RequestMethod.POST)
   public ResponseEntity addReport(@RequestBody Report report, @CurrentUser User user) {
     long userId = user.getUserId();
@@ -55,9 +62,17 @@ public class ReportApi {
     return ResponseEntity.ok(report);
   }
 
+  /**
+   * 删除report.
+   *
+   * @param reportId report's findById.
+   * @return 是否成功删除.
+   */
   @RequestMapping(value = "{reportId}", method = RequestMethod.DELETE)
   public ResponseEntity removeReport(@PathVariable long reportId) {
-    int ok = reportService.deleteReport(reportId);
+    Report report = new Report();
+    report.setReportId(reportId);
+    int ok = reportService.deleteReport(report);
     if (ok == 0) {
       return ResponseEntity.notFound().build();
     }

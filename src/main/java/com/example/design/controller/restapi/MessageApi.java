@@ -29,10 +29,9 @@ public class MessageApi {
   /**
    * 获取用户发布的留言
    *
-   * @param id user id.
+   * @param id user findById.
    * @return user.
    */
-
   @RequestMapping(value = "{id}")
   public ResponseEntity allMessage(@PathVariable long id) {
     List<Message> messages = messageService.getByUserId(id);
@@ -72,7 +71,7 @@ public class MessageApi {
   /**
    * 获取留言信息.
    *
-   * @param messageId message id
+   * @param messageId message findById
    * @return message
    */
   @RequestMapping(value = "{messageId}", method = RequestMethod.GET)
