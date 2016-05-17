@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("register")
-@CrossOrigin(origins = {"http://localhost:8080"}, methods = {RequestMethod.POST})
 public class RegisterApi {
 
   /**
@@ -34,6 +33,7 @@ public class RegisterApi {
   /**
    * 新用户注册.
    */
+  @CrossOrigin(origins = "*")
   @RequestMapping(value = "", method = RequestMethod.POST)
   public ResponseEntity register(@RequestBody RegisterForm registerForm) {
     /**

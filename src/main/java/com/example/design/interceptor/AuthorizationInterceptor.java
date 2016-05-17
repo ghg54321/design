@@ -5,7 +5,6 @@ import com.example.design.component.impl.RedisTokenManager;
 import com.example.design.component.model.TokenModel;
 import com.example.design.constant.Role;
 import com.example.design.constant.TokenConstant;
-import com.example.design.service.impl.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,22 +22,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 自定义拦截器，对请求进行身份验证 Created by lxh on 4/20/16.
+ * 自定义拦截器，对请求进行身份验证.
+ *
+ * @author lxh
+ * @version 0.1
+ * @see org.springframework.web.servlet.handler.HandlerInterceptorAdapter
  */
 @Component
 public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
-  /**
-   * userService 用户信息服务.
-   */
-  @Autowired
-  private UserService userService;
   /**
    * redisTokenManager token管理接口.
    */
   @Autowired
   private RedisTokenManager redisTokenManager;
 
+  /**
+   *
+   */
+  private String authHeader = "Authorization";
 
   /**
    * 鉴定权限信息的无用前缀，默认为空.
@@ -53,6 +55,14 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
    * 鉴定权限失败后返回的HTTP错误码，默认为401.
    */
   private int unauthorizedErrorCode = HttpServletResponse.SC_UNAUTHORIZED;
+
+  /**
+   *
+   * @param authHeader
+   */
+  public final void setAuthHeader(final String authHeader) {
+    this.authHeader = authHeader;
+  }
 
   /**
    * 设置 httpHeaderPrefix.
@@ -93,6 +103,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
           final HttpServletRequest request,
           final HttpServletResponse response,
           final Object handler) throws Exception {
+
     //如果不是映射到方法直接通过
     if (!(handler instanceof HandlerMethod)) {
       return true;
@@ -106,8 +117,9 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
       return true;
     }
 
-    String tokenValue = request.getHeader(TokenConstant.AUTHORIZATION);
-    if (tokenValue == null || !tokenValue.startsWith(TokenConstant.AUTHORIZATION)) {
+    String tokenValue = request.getHeader(authHeader);
+    if (tokenValue == null || !tokenValue.startsWith(httpHeaderPrefix)) {
+      unAuthorization(response);
       return false;
     }
 
@@ -127,7 +139,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
       return false;
     }
 
-    Role role = userService.getRole(tokenModel.getAccount());
+    Role role = tokenModel.getRole();
     request.setAttribute(TokenConstant.CURRENT_USER_ID, tokenModel.getAccount());
     return roles.contains(role);
   }
